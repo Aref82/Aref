@@ -1,0 +1,43 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="logo-box">
+        <i nz-icon nzType="audit" nzTheme="outline"></i>
+      </div>
+      <h2>ورود به حساب کاربری</h2>
+      <p>سامانه مدیریت صورتحساب‌های مودیان</p>
+    </div>
+
+    <form nz-form [formGroup]="loginForm" (ngSubmit)="submitForm()">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="لطفاً یک ایمیل معتبر وارد کنید">
+          <nz-input-group nzPrefixIcon="mail" class="custom-input-group">
+            <input type="email" nz-input formControlName="email" placeholder="پست الکترونیک (Email)" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control nzErrorTip="لطفاً رمز عبور را وارد کنید">
+          <nz-input-group nzPrefixIcon="lock" [nzSuffix]="passwordTemplate" class="custom-input-group">
+            <input [type]="passwordVisible ? 'text' : 'password'" nz-input formControlName="password" placeholder="رمز عبور" />
+          </nz-input-group>
+          <ng-template #passwordTemplate>
+            <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible" class="cursor-pointer"></i>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <button nz-button nzType="primary" [nzLoading]="isLoading" class="submit-btn" [disabled]="loginForm.invalid">
+        ورود به سامانه
+      </button>
+
+      <div class="auth-footer">
+        <span>حساب کاربری ندارید؟</span>
+        <a routerLink="/auth/signup">ثبت‌نام کنید</a>
+      </div>
+    </form>
+  </div>
+  
+  <div class="copyright">© ۱۴۰۳ سامانه مودیان - تمامی حقوق محفوظ است</div>
+</div>

@@ -1,0 +1,101 @@
+<div class="profile-container">
+  <div class="page-header">
+    <h1>پروفایل کاربری</h1>
+    <p class="subtitle">مدیرت اطلاعات شخصی و امنیتی</p>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-state">
+      <nz-spin nzSimple nzSize="large"></nz-spin>
+    </div>
+  } @else {
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+
+      <div class="cards-grid">
+        <nz-card nzTitle="اطلاعات عمومی" [nzExtra]="userIcon">
+          <ng-template #userIcon><i nz-icon nzType="user" nzTheme="outline"></i></ng-template>
+
+          <div class="form-row">
+            <div class="form-item">
+              <label>نام و نام خانوادگی</label>
+              <input nz-input formControlName="fullName" />
+            </div>
+
+            <div class="form-item">
+              <label>ایمیل (غیرقابل تغییر)</label>
+              <input nz-input formControlName="email" class="disabled-input" />
+            </div>
+
+            <div class="form-item">
+              <label>شماره موبایل</label>
+              <input nz-input formControlName="phoneNumber" />
+            </div>
+
+            <div class="form-item">
+              <label>کد اقتصادی</label>
+              <input nz-input formControlName="economicCode" placeholder="۱۴ رقم" />
+            </div>
+
+            <div class="form-item full-width">
+              <label>شناسه یکتا حافظه مالیاتی (Fiscal ID)</label>
+              <input nz-input formControlName="fiscalId" placeholder="کد ۶ کاراکتری" />
+            </div>
+
+            <div class="form-item full-width">
+              <label>آدرس</label>
+              <textarea nz-input formControlName="address" rows="2"></textarea>
+            </div>
+          </div>
+        </nz-card>
+
+        <nz-card nzTitle="تغییر رمز عبور" [nzExtra]="lockIcon" class="security-card">
+          <ng-template #lockIcon><i nz-icon nzType="lock" nzTheme="outline"></i></ng-template>
+
+          <div class="alert-box">
+            <i nz-icon nzType="info-circle" class="mr-2"></i>
+            فقط در صورت نیاز به تغییر رمز، این بخش را پر کنید.
+          </div>
+
+          <div class="form-col">
+            <div class="form-item">
+              <label>رمز عبور فعلی</label>
+              <nz-input-group [nzSuffix]="suffixOld">
+                <input [type]="passwordVisible1 ? 'text' : 'password'" nz-input formControlName="oldPassword" />
+              </nz-input-group>
+              <ng-template #suffixOld>
+                <i nz-icon [nzType]="passwordVisible1 ? 'eye-invisible' : 'eye'" (click)="passwordVisible1 = !passwordVisible1"></i>
+              </ng-template>
+            </div>
+
+            <div class="form-item">
+              <label>رمز عبور جدید</label>
+              <nz-input-group [nzSuffix]="suffixNew">
+                <input [type]="passwordVisible2 ? 'text' : 'password'" nz-input formControlName="password" />
+              </nz-input-group>
+              <ng-template #suffixNew>
+                <i nz-icon [nzType]="passwordVisible2 ? 'eye-invisible' : 'eye'" (click)="passwordVisible2 = !passwordVisible2"></i>
+              </ng-template>
+            </div>
+
+            <div class="form-item">
+              <label>تکرار رمز عبور جدید</label>
+              <nz-input-group [nzSuffix]="suffixConfirm">
+                <input [type]="passwordVisible3 ? 'text' : 'password'" nz-input formControlName="confirmPassword" />
+              </nz-input-group>
+              <ng-template #suffixConfirm>
+                <i nz-icon [nzType]="passwordVisible3 ? 'eye-invisible' : 'eye'" (click)="passwordVisible3 = !passwordVisible3"></i>
+              </ng-template>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+
+      <div class="actions-bar">
+        <button nz-button nzType="primary" nzSize="large" [nzLoading]="isSubmitting">
+          <i nz-icon nzType="save"></i> ذخیره تغییرات
+        </button>
+      </div>
+
+    </form>
+  }
+</div>

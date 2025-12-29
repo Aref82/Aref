@@ -1,0 +1,337 @@
+<div class="invoice-create-container">
+
+  <div class="page-header">
+    <div class="header-content">
+      <h1>ثبت فاکتور جدید</h1>
+      <p class="subtitle">انتخاب روش ثبت (دستی یا اکسل) و ورود جزئیات صورتحساب</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="default" routerLink="/invoices">
+        <i nz-icon nzType="arrow-left"></i> بازگشت به لیست
+      </button>
+    </div>
+  </div>
+
+  <div class="tabs-container">
+    <button [class.active]="activeTab === 'manual'" (click)="activeTab = 'manual'">
+      <i nz-icon nzType="form"></i> ثبت دستی فاکتور
+    </button>
+    <button [class.active]="activeTab === 'upload'" (click)="activeTab = 'upload'">
+      <i nz-icon nzType="file-excel"></i> آپلود فایل اکسل
+    </button>
+  </div>
+
+  @if (activeTab === 'manual') {
+    <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()">
+
+      <nz-card [nzTitle]="headerTitle" class="form-card mb-4">
+        <ng-template #headerTitle>
+          <i nz-icon nzType="solution" class="text-primary ml-2"></i> اطلاعات اصلی و خریدار
+        </ng-template>
+
+        <div class="grid-form header-grid">
+          <div class="form-item">
+            <label class="required">تاریخ صدور</label>
+            <ng-persian-datepicker [dateFormat]="'YYYY/MM/DD'" [timeEnable]="false" class="datepicker-outer-container">
+              <input type="text" formControlName="indati2m" class="form-control" />
+            </ng-persian-datepicker>
+          </div>
+
+          <div class="form-item">
+            <label class="required">الگوی صورتحساب</label>
+            <nz-select formControlName="inp">
+              @for (p of patterns; track p.value) {
+                <nz-option [nzValue]="p.value" [nzLabel]="p.label"></nz-option>
+              }
+            </nz-select>
+          </div>
+
+          <div class="form-item">
+            <label class="required">نوع صورتحساب</label>
+            <nz-select formControlName="inty">
+              @for (t of invoiceTypes; track t.value) {
+                <nz-option [nzValue]="t.value" [nzLabel]="t.label"></nz-option>
+              }
+            </nz-select>
+          </div>
+
+          <div class="form-item">
+            <label class="required">موضوع صورتحساب</label>
+            <nz-select formControlName="ins">
+              @for (s of subjects; track s.value) {
+                <nz-option [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
+              }
+            </nz-select>
+          </div>
+
+          <div class="form-item">
+            <label>شماره سریال داخلی</label>
+            <input nz-input formControlName="inno" placeholder="تولید خودکار" />
+          </div>
+
+          @if (invoiceForm.get('ins')?.value !== 1) {
+            <div class="form-item required">
+              <label>شماره مرجع (۲۲ رقم)</label>
+              <input nz-input formControlName="irtaxid" maxlength="22" />
+            </div>
+          }
+
+          <div class="form-item">
+            <label class="required">روش تسویه</label>
+            <nz-select formControlName="setm">
+              @for (m of paymentMethods; track m.value) {
+                <nz-option [nzValue]="m.value" [nzLabel]="m.label"></nz-option>
+              }
+            </nz-select>
+          </div>
+
+          <div class="form-item">
+            <label>شناسه ملی / کد ملی خریدار</label>
+            <input nz-input formControlName="tinb" placeholder="در صورت وجود" />
+          </div>
+          
+          <div class="form-item">
+            <label>مبلغ پرداختی نقد (ریال)</label>
+            <nz-input-number formControlName="cap" [nzMin]="0" style="width: 100%;" 
+                             [nzDisabled]="invoiceForm.get('setm')?.value !== 3"
+                             placeholder="فقط در روش ترکیبی"></nz-input-number>
+          </div>
+        </div>
+      </nz-card>
+
+      <div class="inner-tabs-container">
+        <div class="inner-tabs">
+          <button type="button" [class.active]="formTab === 'items'" (click)="formTab = 'items'">
+            <i nz-icon nzType="shopping"></i> اقلام کالا
+          </button>
+          <button type="button" [class.active]="formTab === 'other'" (click)="formTab = 'other'">
+            <i nz-icon nzType="percentage"></i> سایر مالیات و وجوه
+          </button>
+        </div>
+      </div>
+
+      @if (formTab === 'items') {
+        <nz-card class="form-card" [nzBodyStyle]="{ padding: '0' }">
+          <div class="card-toolbar">
+            <span class="title">لیست کالا و خدمات</span>
+            <button nz-button nzType="primary" type="button" (click)="openItemModal()">
+              <i nz-icon nzType="plus"></i> افزودن سطر جدید
+            </button>
+          </div>
+
+          <nz-table #itemsTable [nzData]="items.value" [nzShowPagination]="false" nzSize="middle">
+            <thead>
+              <tr>
+                <th nzWidth="50px">#</th>
+                <th>شرح کالا / شناسه</th>
+                <th nzWidth="80px">تعداد</th>
+                <th>مبلغ واحد</th>
+                <th>تخفیف</th>
+                <th>نرخ.م</th>
+                <th>مالیات</th>
+                <th>مبلغ کل</th>
+                <th nzWidth="100px">عملیات</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of itemsTable.data; track item; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td>
+                    <div class="font-bold">{{ item.sstt }}</div>
+                    <div class="text-xs text-secondary">{{ item.sstid }}</div>
+                  </td>
+                  <td>{{ item.am }}</td>
+                  <td>{{ formatPrice(item.fee) }}</td>
+                  <td>{{ formatPrice(item.dis) }}</td>
+                  <td>{{ item.vra }}%</td>
+                  <td>{{ formatPrice(item.vam) }}</td>
+                  <td class="font-bold text-primary">{{ formatPrice(item.tsstam) }}</td>
+                  <td>
+                    <div class="action-buttons">
+                      <a (click)="openItemModal(i)" class="action-btn edit"><i nz-icon nzType="edit"></i></a>
+                      <a (click)="removeItem(i)" class="action-btn delete"><i nz-icon nzType="delete"></i></a>
+                    </div>
+                  </td>
+                </tr>
+              }
+              @if (items.length === 0) {
+                <tr>
+                  <td colspan="9" class="empty-state">
+                    <i nz-icon nzType="inbox"></i>
+                    <p>هنوز کالایی اضافه نشده است</p>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </nz-table>
+        </nz-card>
+      }
+
+      @if (formTab === 'other') {
+        <div class="row-grid-2">
+          <nz-card class="form-card" nzTitle="سایر مالیات و عوارض" [nzExtra]="addTaxBtn">
+            <ng-template #addTaxBtn>
+              <button nz-button nzSize="small" type="button" (click)="addOtherTax()"><i nz-icon nzType="plus"></i></button>
+            </ng-template>
+            
+            <ng-container formArrayName="otherTaxes">
+              @for (tax of otherTaxes.controls; track tax; let i = $index) {
+                <div [formGroupName]="i" class="dynamic-row">
+                  <input nz-input formControlName="topic" placeholder="موضوع (مثلاً عوارض سبز)" />
+                  <nz-input-number formControlName="rate" placeholder="نرخ %" [nzMin]="0"></nz-input-number>
+                  <nz-input-number formControlName="amount" placeholder="مبلغ (ریال)" [nzMin]="0" style="flex: 1.5;"></nz-input-number>
+                  <button type="button" class="delete-icon-btn" (click)="removeOtherTax(i)"><i nz-icon nzType="delete"></i></button>
+                </div>
+              }
+              @if (otherTaxes.length === 0) { <p class="text-center text-muted py-4">موردی ثبت نشده است</p> }
+            </ng-container>
+          </nz-card>
+
+          <nz-card class="form-card" nzTitle="سایر وجوه قانونی" [nzExtra]="addFundBtn">
+            <ng-template #addFundBtn>
+              <button nz-button nzSize="small" type="button" (click)="addOtherFund()"><i nz-icon nzType="plus"></i></button>
+            </ng-template>
+
+            <ng-container formArrayName="otherFunds">
+              @for (fund of otherFunds.controls; track fund; let i = $index) {
+                <div [formGroupName]="i" class="dynamic-row">
+                  <input nz-input formControlName="topic" placeholder="موضوع" />
+                  <nz-input-number formControlName="rate" placeholder="نرخ %" [nzMin]="0"></nz-input-number>
+                  <nz-input-number formControlName="amount" placeholder="مبلغ (ریال)" [nzMin]="0" style="flex: 1.5;"></nz-input-number>
+                  <button type="button" class="delete-icon-btn" (click)="removeOtherFund(i)"><i nz-icon nzType="delete"></i></button>
+                </div>
+              }
+              @if (otherFunds.length === 0) { <p class="text-center text-muted py-4">موردی ثبت نشده است</p> }
+            </ng-container>
+          </nz-card>
+        </div>
+      }
+
+      <div class="detailed-footer">
+        <div class="totals-grid">
+          <div class="total-item">
+            <span class="label">جمع کل قبل تخفیف</span>
+            <span class="value">{{ formatPrice(totalPrdis) }}</span>
+          </div>
+          <div class="total-item warning">
+            <span class="label">مجموع تخفیفات</span>
+            <span class="value">{{ formatPrice(totalDis) }}</span>
+          </div>
+          <div class="total-item success">
+            <span class="label">مجموع پس از کسر</span>
+            <span class="value">{{ formatPrice(totalAdis) }}</span>
+          </div>
+          <div class="total-item">
+            <span class="label">مالیات بر ارزش افزوده</span>
+            <span class="value">{{ formatPrice(totalVam) }}</span>
+          </div>
+
+          <div class="total-item">
+            <span class="label">سایر مالیات / وجوه</span>
+            <span class="value">{{ formatPrice(totalOdam) }}</span>
+          </div>
+          <div class="total-item primary big">
+            <span class="label">مبلغ نهایی صورتحساب</span>
+            <span class="value">{{ formatPrice(totalBill) }}</span>
+          </div>
+          <div class="total-item">
+            <span class="label">پرداخت نقد</span>
+            <span class="value">{{ formatPrice(cashPayment) }}</span>
+          </div>
+          <div class="total-item">
+            <span class="label">پرداخت نسیه</span>
+            <span class="value">{{ formatPrice(creditPayment) }}</span>
+          </div>
+        </div>
+
+        <button nz-button nzType="primary" class="submit-btn" [nzLoading]="isSubmitting">
+          <nz-icon nzType="plus-square" nzTheme="outline" /> ثبت صورتحساب
+        </button>
+      </div>
+
+    </form>
+
+    <nz-modal
+      [(nzVisible)]="isItemModalVisible"
+      [nzTitle]="editingItemIndex !== null ? 'ویرایش کالا' : 'افزودن کالا جدید'"
+      (nzOnCancel)="handleModalCancel()"
+      (nzOnOk)="handleModalSubmit()"
+      [nzWidth]="850"
+      nzOkText="تایید و افزودن"
+      nzCancelText="انصراف"
+    >
+      <ng-container *nzModalContent>
+        <form [formGroup]="itemForm" class="grid-form modal-grid">
+          
+          <div class="form-item col-span-2">
+            <label class="required">شرح کالا / خدمات</label>
+            <input nz-input formControlName="sstt" placeholder="نام کالا" />
+          </div>
+
+          <div class="form-item">
+            <label class="required">شناسه کالا (۱۳ رقم)</label>
+            <input nz-input formControlName="sstid" maxlength="13" />
+          </div>
+
+          <div class="form-item">
+            <label class="required">تعداد / مقدار</label>
+            <nz-input-number formControlName="am" [nzMin]="0" style="width: 100%;"></nz-input-number>
+          </div>
+
+          <div class="form-item">
+            <label class="required">مبلغ واحد (ریال)</label>
+            <nz-input-number formControlName="fee" [nzMin]="0" [nzStep]="1000" style="width: 100%;"></nz-input-number>
+          </div>
+
+          <div class="form-item">
+            <label>مبلغ تخفیف</label>
+            <nz-input-number formControlName="dis" [nzMin]="0" style="width: 100%;"></nz-input-number>
+          </div>
+
+          <div class="form-item">
+            <label>نرخ مالیات (%)</label>
+            <nz-input-number formControlName="vra" [nzMin]="0" [nzMax]="100" style="width: 100%;"></nz-input-number>
+          </div>
+
+          @if (invoiceForm.get('inp')?.value === 3) {
+            <div class="col-span-2 divider-gold">
+              <span class="bg-gold-badge">اطلاعات تکمیلی طلا و جواهر</span>
+            </div>
+
+            <div class="form-item">
+              <label>اجرت ساخت</label>
+              <nz-input-number formControlName="consfee" style="width: 100%;" [nzMin]="0"></nz-input-number>
+            </div>
+            <div class="form-item">
+              <label>سود فروشنده</label>
+              <nz-input-number formControlName="spro" style="width: 100%;" [nzMin]="0"></nz-input-number>
+            </div>
+            <div class="form-item">
+              <label>حق‌العمل</label>
+              <nz-input-number formControlName="bros" style="width: 100%;" [nzMin]="0"></nz-input-number>
+            </div>
+            <div class="form-item"></div> 
+          }
+
+          <div class="col-span-2 live-calc-box">
+             <div>مبلغ قبل تخفیف: <strong>{{ formatPrice(itemForm.get('prdis')?.value) }}</strong></div>
+             <div>مبلغ پس از کسر: <strong>{{ formatPrice(itemForm.get('adis')?.value) }}</strong></div>
+             <div>مالیات: <strong>{{ formatPrice(itemForm.get('vam')?.value) }}</strong></div>
+             <div class="total">جمع کل سطر: <strong>{{ formatPrice(itemForm.get('tsstam')?.value) }}</strong></div>
+          </div>
+        </form>
+      </ng-container>
+    </nz-modal>
+  }
+
+  @if (activeTab === 'upload') {
+    <div class="upload-container">
+       <div class="upload-box" (click)="fileInput.click()">
+        <input #fileInput type="file" hidden (change)="onFileSelected($event)" accept=".xlsx, .xls">
+        <i nz-icon nzType="cloud-upload" class="upload-icon"></i>
+        <h3>فایل اکسل را اینجا رها کنید</h3>
+      </div>
+    </div>
+  }
+</div>

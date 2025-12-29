@@ -1,0 +1,174 @@
+<div class="dashboard-container">
+
+  <div class="page-header">
+    <div class="header-content">
+      <h1>پیشخوان مدیریتی</h1>
+      <p>نمای کلی وضعیت فاکتورها و سامانه مودیان</p>
+    </div>
+
+    <div class="header-actions">
+      <div class="auto-refresh-wrapper">
+        <span class="refresh-label">بروزرسانی خودکار</span>
+        <nz-switch
+          [(ngModel)]="autoRefreshEnabled"
+          (ngModelChange)="toggleAutoRefresh()"
+          [nzCheckedChildren]="checkedTemplate"
+          [nzUnCheckedChildren]="unCheckedTemplate"
+        ></nz-switch>
+        <ng-template #checkedTemplate><i nz-icon nzType="sync" nzTheme="outline" class="spin"></i></ng-template>
+        <ng-template #unCheckedTemplate><i nz-icon nzType="pause" nzTheme="outline"></i></ng-template>
+      </div>
+
+      <button nz-button nzType="primary" (click)="loadDashboardData()" [nzLoading]="isLoading">
+        <i nz-icon nzType="reload"></i>
+        <span>بروزرسانی</span>
+      </button>
+    </div>
+  </div>
+
+  @if (systemAlerts.length > 0) {
+    <div class="alerts-section">
+      @for (alert of systemAlerts; track alert.message) {
+        <nz-alert
+          [nzType]="alert.type"
+          [nzMessage]="alert.message"
+          nzShowIcon
+          class="mb-2"
+        ></nz-alert>
+      }
+    </div>
+  }
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon primary"><i nz-icon nzType="file-text" nzTheme="outline"></i></div>
+      <div class="stat-info">
+        <h3>{{ statistics?.total || 0 }}</h3>
+        <span>کل فاکتورها</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon success"><i nz-icon nzType="check-circle" nzTheme="outline"></i></div>
+      <div class="stat-info">
+        <h3>{{ statistics?.success || 0 }}</h3>
+        <span>ارسال موفق</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon warning"><i nz-icon nzType="clock-circle" nzTheme="outline"></i></div>
+      <div class="stat-info">
+        <h3>{{ (statistics?.inQueue || 0) + (statistics?.pending || 0) }}</h3>
+        <span>در انتظار ارسال</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon info"><i nz-icon nzType="dollar" nzTheme="outline"></i></div>
+      <div class="stat-info" nz-tooltip [nzTooltipTitle]="formatAmount(statistics?.totalAmount || 0) + ' ریال'">
+       <h3 class="amount-text">
+          {{ formatAmount(statistics?.totalAmount || 0) }} <small>ریال</small>
+        </h3>
+        <span>جمع مبلغ فروش</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content-grid">
+    
+    <div class="main-column">
+      
+      <div class="card-base chart-card">
+        <div class="card-header">
+          <h4>روند فروش ({{chartRange}} روز اخیر)</h4>
+          <nz-tag color="blue">زنده</nz-tag>
+        </div>
+        <div class="chart-toggles">
+      <button 
+        type="button" 
+        [class.active]="chartRange === 7" 
+        (click)="setChartRange(7)">
+        ۷ روز
+           </button>
+           <button 
+               type="button" 
+                 [class.active]="chartRange === 12" 
+                (click)="setChartRange(12)">۱۲ روز
+                </button>
+       </div>
+        <div class="chart-container">
+          @if (last7DaysSales.length > 0) {
+            <div class="bar-chart" [class.dense]="chartRange > 7">
+              @for (data of last7DaysSales; track data.day) {
+                <div class="chart-col">
+                  <div class="bar-wrapper" nz-tooltip [nzTooltipTitle]="formatAmount(data.amount) + ' ریال - ' + data.date">
+                    <div class="bar" [style.height.%]="data.percentage"></div>
+                  </div>
+                  <span class="label">{{ chartRange > 7 ? (data.date | slice:8) : data.day }}</span>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-state">
+              <nz-empty nzNotFoundImage="simple" nzNotFoundContent="داده‌ای برای نمایش نیست"></nz-empty>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="card-base quick-actions-card">
+        <div class="card-header"><h4>دسترسی سریع</h4></div>
+        <div class="actions-grid">
+          <div class="action-item" (click)="quickAction('new')">
+            <div class="icon-box blue"><i nz-icon nzType="plus"></i></div>
+            <span>فاکتور جدید</span>
+          </div>
+          <div class="action-item" (click)="quickAction('excel')">
+            <div class="icon-box green"><i nz-icon nzType="file-excel"></i></div>
+            <span>آپلود اکسل</span>
+          </div>
+          <div class="action-item" (click)="quickAction('customers')">
+            <div class="icon-box purple"><i nz-icon nzType="team"></i></div>
+            <span>مشتریان</span>
+          </div>
+          <div class="action-item" (click)="quickAction('report')">
+            <div class="icon-box orange"><i nz-icon nzType="pie-chart"></i></div>
+            <span>گزارشات</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="side-column">
+      <div class="card-base pie-chart-card">
+        <div class="card-header">
+          <h4>وضعیت کلی فاکتورها</h4>
+        </div>
+        
+        <div class="pie-container">
+          <div class="donut-chart" [style.background]="pieChartGradient">
+            <div class="center-hole">
+              <span class="total-val">{{ statistics?.total || 0 }}</span>
+              <span class="total-lbl">فاکتور</span>
+            </div>
+          </div>
+          
+          <div class="chart-legend">
+            @for (item of pieChartData; track item.label) {
+              <div class="legend-item">
+                <div class="info">
+                   <span class="dot" [style.background-color]="item.color"></span>
+                   <span class="label">{{ item.label }}</span>
+                </div>
+                <span class="percent">{{ item.percent }}%</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

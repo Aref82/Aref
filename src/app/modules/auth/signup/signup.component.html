@@ -1,0 +1,68 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="logo-box">
+        <i nz-icon nzType="user-add" nzTheme="outline"></i>
+      </div>
+      <h2>ایجاد حساب کاربری</h2>
+      <p>جهت استفاده از امکانات سامانه ثبت‌نام کنید</p>
+    </div>
+
+    <form nz-form [formGroup]="signupForm" (ngSubmit)="submitForm()">
+      
+      <nz-form-item>
+        <nz-form-control nzErrorTip="نام و نام خانوادگی الزامی است">
+          <nz-input-group nzPrefixIcon="user" class="custom-input-group">
+            <input type="text" nz-input formControlName="fullName" placeholder="نام و نام خانوادگی" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control nzErrorTip="لطفاً یک ایمیل معتبر وارد کنید">
+          <nz-input-group nzPrefixIcon="mail" class="custom-input-group">
+            <input type="email" nz-input formControlName="email" placeholder="پست الکترونیک (Email)" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="passwordErrorTpl">
+          <nz-input-group nzPrefixIcon="lock" [nzSuffix]="passwordTemplate" class="custom-input-group">
+            <input [type]="passwordVisible ? 'text' : 'password'" nz-input formControlName="password" placeholder="رمز عبور" (ngModelChange)="updateConfirmValidator()" />
+          </nz-input-group>
+          <ng-template #passwordTemplate>
+            <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible" class="cursor-pointer"></i>
+          </ng-template>
+          <ng-template #passwordErrorTpl let-control>
+            @if (control.hasError('required')) { رمز عبور الزامی است }
+            @else if (control.hasError('minlength')) { حداقل ۶ کاراکتر باشد }
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="confirmErrorTpl">
+          <nz-input-group nzPrefixIcon="lock" class="custom-input-group">
+            <input [type]="passwordVisible ? 'text' : 'password'" nz-input formControlName="confirmPassword" placeholder="تکرار رمز عبور" />
+          </nz-input-group>
+          <ng-template #confirmErrorTpl let-control>
+            @if (control.hasError('required')) { تکرار رمز الزامی است }
+            @else if (control.hasError('confirm')) { رمز عبور مطابقت ندارد }
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <button nz-button nzType="primary" [nzLoading]="isLoading" class="submit-btn" [disabled]="signupForm.invalid">
+        ثبت‌نام و ورود
+      </button>
+
+      <div class="auth-footer">
+        <span>قبلاً ثبت‌نام کرده‌اید؟</span>
+        <a routerLink="/auth/login">وارد شوید</a>
+      </div>
+    </form>
+  </div>
+  
+  <div class="copyright">© ۱۴۰۳ سامانه مودیان</div>
+</div>

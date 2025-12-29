@@ -1,0 +1,41 @@
+<nav class="sidebar" [class.collapsed]="layoutService.getSidebarState()">
+  <div class="sidebar-header">
+    <div class="logo">
+      <i nz-icon nzType="thunderbolt" nzTheme="fill" class="logo-icon"></i>
+      @if (!layoutService.getSidebarState()) {
+        <span class="logo-text">سامانه فاکتور</span>
+      }
+    </div>
+
+  </div>
+
+  <div class="menu-container">
+    <ul class="menu-list">
+      @for (item of menuItems; track item.title) {
+        <li
+          class="menu-item"
+          [class.active]="isMenuItemActive(item)"  (click)="navigateTo(item)"               >
+          <div class="menu-item-content">
+            <i nz-icon [nzType]="item.icon" nzTheme="outline"></i>
+            @if (!layoutService.getSidebarState()) {
+              <span class="menu-title">{{ item.title }}</span>
+            }
+          </div>
+
+          @if (item.badge && item.badge > 0 && !layoutService.getSidebarState()) {
+            <div class="custom-badge">{{ item.badge }}</div>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" (click)="logout()">
+      <i nz-icon nzType="logout" nzTheme="outline"></i>
+      @if (!layoutService.getSidebarState()) {
+        <span>خروج</span>
+      }
+    </button>
+  </div>
+</nav>

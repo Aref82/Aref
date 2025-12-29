@@ -1,0 +1,579 @@
+/* =========================================
+   1. متغیرها و تنظیمات پایه
+   ========================================= */
+$primary-color: #4f46e5;      // رنگ اصلی (بنفش)
+$primary-light: #e0e7ff;      // بنفش خیلی کمرنگ
+$success-color: #10b981;      // سبز
+$warning-color: #f59e0b;      // نارنجی/طلایی
+$danger-color: #ef4444;       // قرمز
+$text-main: #1e293b;          // متن اصلی
+$text-secondary: #64748b;     // متن فرعی
+$border-color: #e2e8f0;       // رنگ حاشیه
+$radius: 12px;                // شعاع گردی گوشه‌ها
+
+:host {
+  display: block;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'IRANSans', sans-serif !important;
+}
+
+.invoice-create-container {
+  padding: 24px;
+  max-width: 1600px; /* عرض بیشتر برای مانیتورهای بزرگ */
+  margin: 0 auto;
+  padding-bottom: 160px; /* فضای خالی زیاد برای فوتر بزرگ جدید */
+}
+
+/* =========================================
+   2. هدر صفحه و دکمه‌ها
+   ========================================= */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+
+  .header-content {
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: $text-main;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: $text-secondary;
+      font-size: 14px;
+    }
+  }
+
+  .header-actions {
+    button {
+      height: 42px;
+      padding: 0 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      border: 1px solid $border-color;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: $primary-color;
+        border-color: $primary-color;
+        background: white;
+        transform: translateY(-2px);
+      }
+    }
+  }
+}
+
+/* =========================================
+   3. تب‌های اصلی (دستی / اکسل)
+   ========================================= */
+.tabs-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  background: white;
+  padding: 8px;
+  border-radius: 16px;
+  width: fit-content;
+  border: 1px solid $border-color;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+
+  button {
+    border: none;
+    background: transparent;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i { font-size: 16px; }
+
+    &:hover { background: #f1f5f9; }
+
+    &.active {
+      background: $primary-light;
+      color: $primary-color;
+      font-weight: 700;
+    }
+  }
+}
+
+/* =========================================
+   4. تب‌های داخلی (اقلام / سایر) - جدید
+   ========================================= */
+.inner-tabs-container {
+  margin-bottom: 16px;
+  border-bottom: 2px solid $border-color;
+  
+  .inner-tabs {
+    display: flex;
+    gap: 24px;
+
+    button {
+      background: none;
+      border: none;
+      padding: 12px 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: $text-secondary;
+      position: relative;
+      top: 2px; /* برای اینکه روی خط بیفتد */
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex; 
+      align-items: center; 
+      gap: 8px;
+
+      i { font-size: 16px; }
+
+      &.active {
+        color: $primary-color;
+        border-bottom: 2px solid $primary-color;
+      }
+
+      &:hover:not(.active) {
+        color: $text-main;
+      }
+    }
+  }
+}
+
+/* =========================================
+   5. کارت‌های فرم و گرید سیستم
+   ========================================= */
+.form-card {
+  border-radius: $radius;
+  border: 1px solid $border-color;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  margin-bottom: 24px;
+  background: white;
+  overflow: visible;
+
+  /* هدر کارت (NG-ZORRO Overrides) */
+  ::ng-deep .ant-card-head {
+    border-bottom: 1px solid #f1f5f9;
+    background: #ffffff;
+    padding: 0 24px;
+    min-height: 56px;
+    border-top-left-radius: $radius;
+    border-top-right-radius: $radius;
+
+
+    .ant-card-head-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: $text-main;
+      display: flex;
+      align-items: center;
+      i { font-size: 18px; margin-left: 8px; }
+    }
+  }
+
+  ::ng-deep .ant-card-body {
+    padding: 24px;
+  }
+  
+  /* نوار ابزار داخل کارت (برای جدول) */
+  .card-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #fff;
+    
+    .title { font-weight: 700; color: $text-main; font-size: 14px; }
+  }
+}
+
+.grid-form {
+  display: grid;
+  gap: 24px 20px;
+
+  &.header-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  &.modal-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.form-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-secondary;
+    &.required::after { content: '*'; color: $danger-color; margin-right: 4px; }
+  }
+
+  input, nz-select, nz-input-number, ng-persian-datepicker {
+    width: 100%;
+    border-radius: 8px;
+    position: relative;
+    display: block;
+    ::ng-deep {
+      .datepicker-outer-container{
+        position: absolute !important;
+        top: 100% !important;
+        right: 0 !important;
+        z-index: 1000 !important;     
+        background: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      }
+    }
+  }
+  
+  /* ارتفاع یکسان */
+  input, ::ng-deep .ant-select-selector, ::ng-deep .ant-input-number-input, ::ng-deep .ant-input {
+    height: 42px !important;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+
+  &.col-span-2 { grid-column: span 2; }
+}
+
+/* =========================================
+   6. جداول و سطرها
+   ========================================= */
+nz-table {
+  ::ng-deep {
+    .ant-table { background: transparent; }
+
+    thead > tr > th {
+      background: #f8fafc;
+      color: $text-secondary;
+      font-weight: 700;
+      font-size: 12px;
+      border-bottom: 1px solid $border-color;
+      padding: 12px 16px;
+      white-space: nowrap;
+    }
+
+    tbody > tr > td {
+      border-bottom: 1px solid #f1f5f9;
+      padding: 14px 16px;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+    
+    tbody > tr:hover > td { background: #fafafa; }
+  }
+
+  .font-bold { font-weight: 700; color: $text-main; }
+  .text-xs { font-size: 11px; }
+  .text-secondary { color: $text-secondary; }
+  .text-primary { color: $primary-color; }
+
+  /* دکمه‌های عملیات داخل جدول */
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+    
+    .action-btn {
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      
+      &.edit { color: $text-secondary; &:hover { color: $primary-color; transform: scale(1.1); } }
+      &.delete { color: $text-secondary; &:hover { color: $danger-color; transform: scale(1.1); } }
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: $text-secondary;
+    i { font-size: 40px; margin-bottom: 10px; color: #cbd5e1; }
+  }
+}
+
+/* استایل ردیف‌های داینامیک (سایر وجوه) - جدید */
+.row-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.dynamic-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  animation: slideDown 0.2s ease-out;
+
+  .delete-icon-btn {
+    background: #fee2e2;
+    border: none;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 8px;
+    color: $danger-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover { background: $danger-color; color: white; }
+  }
+}
+
+/* =========================================
+   7. فوتر پیشرفته و گرید بندی شده - جدید
+   ========================================= */
+.detailed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid $border-color;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.08);
+  padding: 12px 280px 12px 24px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: space-between;
+
+  /* گرید نمایش مجموع‌ها */
+  .totals-grid {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px 30px;
+    
+    .total-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      white-space: nowrap;
+      
+      .label { color: $text-secondary; margin-left: 8px; }
+      .value { 
+        font-family: 'Vazir', sans-serif; 
+        font-weight: 700; 
+        color: $text-main; 
+        font-size: 13px; 
+     
+      }
+
+      /* رنگ‌بندی مقادیر خاص */
+      &.warning .value { color: $warning-color; }
+      &.success .value { color: $success-color; }
+      
+      &.primary.big {
+        background: rgba(79, 70, 229, 0.08);
+        padding: 4px 12px;
+        border-radius: 8px;
+        margin: 0 4px;
+        .label { font-size: 14px; font-weight: 800; color: $primary-color; }
+        .value { font-size: 20px; color: $primary-color; }
+      }
+    }
+  }
+
+  .submit-btn {
+    height: 42px;
+    padding: 0 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 10px;
+    background: linear-gradient(135deg, $primary-color, darken($primary-color, 10%));
+    border: none;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
+    }
+    
+    i { font-size: 16px; }
+  }
+}
+
+/* =========================================
+   8. استایل‌های خاص (طلا، آپلود، مودال)
+   ========================================= */
+
+/* بخش جداکننده طلا */
+.divider-gold {
+  margin: 20px 0;
+  border-top: 1px dashed $warning-color;
+  text-align: center;
+  position: relative;
+
+  .bg-gold-badge {
+    position: relative;
+    top: -12px;
+    background: #fffbeb; 
+    color: #b45309; 
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid #fcd34d;
+    box-shadow: 0 2px 4px rgba(251, 191, 36, 0.1);
+  }
+}
+
+/* باکس محاسبات زنده در مودال - جدید */
+.live-calc-box {
+  background: #f8fafc;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  div { 
+    font-size: 13px; 
+    color: $text-secondary; 
+    
+    strong { 
+      color: $text-main; 
+      margin-right: 6px; 
+      font-family: 'Vazir'; 
+      font-size: 14px;
+    } 
+  }
+
+  .total strong { 
+    color: $primary-color; 
+    font-size: 16px; 
+    font-weight: 800;
+  }
+}
+
+/* باکس آپلود */
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: white;
+  border-radius: $radius;
+  border: 1px solid $border-color;
+
+  .upload-box {
+    width: 100%;
+    max-width: 500px;
+    height: 250px;
+    border: 2px dashed $border-color;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #f8fafc;
+
+    &:hover {
+      border-color: $primary-color;
+      background: $primary-light;
+      .upload-icon { color: $primary-color; transform: scale(1.1); }
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      color: #94a3b8;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+
+    h3 { font-size: 16px; font-weight: 700; color: $text-main; margin-bottom: 8px; }
+  }
+}
+
+/* =========================================
+   9. ریسپانسیو و انیمیشن‌ها
+   ========================================= */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 992px) {
+  .detailed-footer {
+    flex-direction: column;
+    height: auto;
+    position: relative; /* در موبایل نچسبد به ته صفحه که مزاحم شود */
+    padding : 12px 16px;
+    right: 0;
+    .totals-grid {
+      width: 100%;
+      grid-template-columns: 1fr; /* در موبایل تمام عرض */
+      margin-bottom: 12px;
+      padding-right: 0;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      height: 48px;
+    }
+  .row-grid-2 { grid-template-columns: 1fr; }
+}}
+
+@media (max-width: 992px) {
+  .grid-form, .grid-form.header-grid, .grid-form.modal-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-item.col-span-2 { grid-column: auto; }
+
+  .detailed-footer {
+    flex-direction: column;
+    position: relative; /* در موبایل نچسبه */
+    padding: 20px;
+    
+    .totals-grid { 
+      width: 100%; 
+      grid-template-columns: 1fr; 
+      gap: 16px;
+    }
+    
+    .submit-btn { 
+      width: 100%; 
+      margin-top: 24px; 
+    }
+  }
+
+  .live-calc-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+

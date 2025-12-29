@@ -1,0 +1,148 @@
+/* =========================================
+   1. ایمپورت‌های اصلی
+   ========================================= */
+@import 'ng-zorro-antd/ng-zorro-antd.min.css';
+@import '@angular/cdk/overlay-prebuilt.css';
+@import 'ngx-toastr/toastr';
+
+/* =========================================
+   2. تنظیمات فونت (کدهای شخصی شما)
+   ========================================= */
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('../assets/fonts/vazir/Vazirmatn-Regular.woff2') format('woff2'),
+  url('../assets/fonts/vazir/Vazirmatn-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('../assets/fonts/vazir/Vazirmatn-Bold.woff2') format('woff2'),
+  url('../assets/fonts/vazir/Vazirmatn-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* اعمال فونت به تمام اجزا */
+body, html, nz-table, button, input, textarea, .ant-btn, .ant-menu, .ant-table, * {
+  font-family: 'Vazirmatn', sans-serif !important;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #f8fafc;
+  direction: rtl;
+  text-align: right; /* اضافه شده برای اطمینان از راست‌چین */
+  overflow-x: hidden;
+}
+
+/* =========================================
+   3. استایل نوتیفیکیشن (کدهای شخصی شما)
+   ========================================= */
+.toast-container .ngx-toastr {
+  font-family: 'Vazirmatn', sans-serif !important;
+  border-radius: 12px !important;
+  padding: 15px 15px 15px 50px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+  opacity: 1 !important;
+  background-position: 15px center !important;
+  width: 320px !important;
+
+  &:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-2px);
+  }
+
+  &.toast-success { background-color: #10b981 !important; }
+  &.toast-error   { background-color: #ef4444 !important; }
+  &.toast-info    { background-color: #3b82f6 !important; }
+  &.toast-warning { background-color: #f59e0b !important; }
+
+  .toast-message { font-size: 13px; font-weight: 500; }
+  .toast-title { font-weight: 800; font-size: 14px; margin-bottom: 5px; }
+}
+
+/* =========================================
+   4. فیکس حیاتی لایه‌های شناور (تقویم و دراپ‌داون)
+   ========================================= */
+.cdk-overlay-container {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  direction: rtl;
+}
+
+/* --- این کلاس جا افتاده بود و باعث پرش تقویم می‌شد --- */
+.cdk-overlay-connected-position-bounding-box {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  min-width: 1px;
+  min-height: 1px;
+}
+
+.cdk-global-overlay-wrapper, .cdk-overlay-pane {
+  pointer-events: auto;
+  z-index: 10001 !important;
+}
+
+.cdk-overlay-pane {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.cdk-overlay-backdrop {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  pointer-events: auto;
+  background: rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  opacity: 1;
+}
+
+/* =========================================
+   5. زیباسازی تقویم و سلکت‌ها
+   ========================================= */
+.ant-picker-dropdown, .ant-select-dropdown {
+  direction: rtl;
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* رنگ آیتم انتخاب شده */
+.ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #4f46e5 !important;
+  color: white !important;
+  border-color: #4f46e5 !important;
+}
+
+/* هاور روی آیتم‌ها */
+.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: #e0e7ff !important;
+}
+.cdk-overlay-connected-position-bounding-box {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  min-width: 1px;
+  min-height: 1px;
+}

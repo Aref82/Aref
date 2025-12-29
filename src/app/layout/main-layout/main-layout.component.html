@@ -1,0 +1,137 @@
+<div class="main-layout" [class.sidebar-collapsed]="layoutService.getSidebarState()">
+  <app-sidebar
+    class="desktop-sidebar"
+    [class.mobile-visible]="showMobileSidebar"
+  ></app-sidebar>
+
+  @if (showMobileSidebar && isMobile) {
+    <div class="sidebar-overlay" (click)="closeMobileSidebar()"></div>
+  }
+
+  <div class="content-wrapper">
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+        @if (isMobile) {
+          <button class="mobile-menu-btn" (click)="toggleMobileSidebar()">
+            <i nz-icon nzType="menu"></i>
+          </button>
+        }
+        @if (!isMobile) {
+          <button class="desktop-toggle-btn" (click)="layoutService.toggleSidebar()">
+            <i nz-icon [nzType]="layoutService.getSidebarState() ? 'menu-unfold' : 'menu-fold'"></i>
+          </button>
+        }
+
+        <div class="page-title">
+          <h1>داشبورد</h1>
+          <span class="breadcrumb">سامانه فاکتور / پیشخوان</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+
+        <button
+          class="notification-btn"
+          nz-popover
+          [nzPopoverContent]="notificationContent"
+          nzPopoverTrigger="click"
+          nzPopoverPlacement="bottomLeft"
+          [nzPopoverOverlayStyle]="{'padding': '0','margin-top':'12px'}"
+        >
+          <i nz-icon nzType="bell" nzTheme="outline"></i>
+          <span class="notification-badge"></span>
+        </button>
+
+        <ng-template #notificationContent>
+          <div class="notifications-dropdown">
+            <div class="dropdown-header">
+              <h4>اعلان‌ها</h4>
+              <span class="mark-read">خوانده شدن همه</span>
+            </div>
+
+            <div class="notification-list">
+              <div class="notification-item unread">
+                <div class="notif-icon-box success">
+                  <i nz-icon nzType="check-circle" nzTheme="outline"></i>
+                </div>
+                <div class="notif-content">
+                  <p>فاکتور #INV-0012 با موفقیت ارسال شد</p>
+                  <span class="time">۲ دقیقه پیش</span>
+                </div>
+              </div>
+
+              <div class="notification-item">
+                <div class="notif-icon-box info">
+                  <i nz-icon nzType="info-circle" nzTheme="outline"></i>
+                </div>
+                <div class="notif-content">
+                  <p>۳ فاکتور در انتظار ارسال به مودیان</p>
+                  <span class="time">۱ ساعت پیش</span>
+                </div>
+              </div>
+
+              <div class="notification-item">
+                <div class="notif-icon-box warning">
+                  <i nz-icon nzType="warning" nzTheme="outline"></i>
+                </div>
+                <div class="notif-content">
+                  <p>گواهی مالیاتی تا ۷ روز دیگر منقضی می‌شود</p>
+                  <span class="time">دیروز</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+        <div
+          class="user-profile"
+          nz-dropdown
+          [nzDropdownMenu]="userMenu"
+          nzPlacement="bottomRight"
+          [nzOverlayStyle]="{'min-width': '180px'}"
+        >
+          <div class="user-avatar">
+            @if (currentUser?.fullName) {
+              <span class="avatar-initials">{{ getInitials(currentUser?.fullName || '') }}</span>
+            } @else {
+              <i nz-icon nzType="user" nzTheme="outline"></i>
+            }
+          </div>
+
+          <div class="user-info">
+            <span class="user-name">{{ currentUser?.fullName || 'کاربر مهمان' }}</span>
+            <span class="user-role">{{ currentUser?.role === 'admin' ? 'مدیر سیستم' : 'کاربر عادی' }}</span>
+          </div>
+
+          <i nz-icon nzType="down" class="dropdown-arrow"></i>
+        </div>
+
+        <nz-dropdown-menu #userMenu="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item (click)="closeMobileSidebar()" routerLink="/profile">
+              <i nz-icon nzType="user" nzTheme="outline"></i>
+              <span style="margin-right: 8px">پروفایل من</span>
+            </li>
+            <li nz-menu-item (click)="closeMobileSidebar()">
+              <i nz-icon nzType="setting" nzTheme="outline"></i>
+              <span style="margin-right: 8px">تنظیمات</span>
+            </li>
+            <li nz-menu-divider></li>
+            <li nz-menu-item (click)="authService.logout()" nzDanger>
+              <i nz-icon nzType="logout" nzTheme="outline"></i>
+              <span style="margin-right: 8px">خروج</span>
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="content-container">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+.profile-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .page-header {
+    margin-bottom: 32px;
+    h1 { font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
+    .subtitle { color: #64748b; font-size: 14px; }
+  }
+
+  .loading-state {
+    display: flex; justify-content: center; padding: 50px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; // کارت اطلاعات بزرگتر، پسورد کوچکتر
+    gap: 24px;
+
+    @media (max-width: 992px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  nz-card {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+    height: 100%;
+
+    ::ng-deep .ant-card-head { border-bottom: 1px dashed #e2e8f0; }
+    ::ng-deep .ant-card-head-title { font-weight: 700; color: #334155; }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+    @media (max-width: 600px) { grid-template-columns: 1fr; }
+  }
+
+  .form-col {
+    display: flex; flex-direction: column; gap: 20px;
+  }
+
+  .form-item {
+    &.full-width { grid-column: 1 / -1; }
+
+    label {
+      display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #475569;
+    }
+
+    input, textarea { border-radius: 8px; }
+
+    .disabled-input {
+      background-color: #f1f5f9; color: #94a3b8; cursor: not-allowed;
+    }
+  }
+
+  .security-card {
+    .alert-box {
+      background: #eff6ff; border: 1px solid #dbeafe; color: #1e40af;
+      padding: 12px; border-radius: 8px; font-size: 12px; margin-bottom: 20px;
+      display: flex; align-items: center;
+    }
+  }
+
+  .actions-bar {
+    margin-top: 32px;
+    display: flex; justify-content: flex-end;
+
+    button {
+      min-width: 150px; border-radius: 10px; font-weight: 700;
+    }
+  }
+}

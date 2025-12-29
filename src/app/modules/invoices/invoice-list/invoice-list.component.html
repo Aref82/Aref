@@ -1,0 +1,223 @@
+<div class="invoice-list-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>مدیریت فاکتورها</h1>
+      <p class="subtitle">مشاهده، مدیریت و ارسال فاکتورها به سامانه مودیان</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="default" (click)="showExportModal()" class="ml-2">
+        <i nz-icon nzType="file-excel" nzTheme="outline" style="color: #10b981;"></i>
+        خروجی اکسل
+      </button>
+      <button nz-button nzType="primary" routerLink="/invoices/new">
+        <i nz-icon nzType="plus" nzTheme="outline"></i> ایجاد فاکتور جدید
+      </button>
+      <button nz-button nzType="default" (click)="refreshData()" [nzLoading]="isRefreshing">
+        <i nz-icon nzType="reload" nzTheme="outline"></i> به‌روزرسانی
+      </button>
+    </div>
+  </div>
+
+  <div class="statistics-cards">
+    <div class="stat-card">
+      <div class="stat-icon total"><i nz-icon nzType="file-text"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ statistics?.total || 0 }}</span>
+        <span class="stat-label">کل فاکتورها</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon success"><i nz-icon nzType="check-circle"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ statistics?.success || 0 }}</span>
+        <span class="stat-label">ارسال موفق</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon pending"><i nz-icon nzType="clock-circle"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ statistics?.pending || 0 }}</span>
+        <span class="stat-label">در صف / در حال ارسال</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon error"><i nz-icon nzType="close-circle"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ statistics?.error || 0 }}</span>
+        <span class="stat-label">خطا در ارسال</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters-container">
+    <div class="main-search-bar">
+      <nz-input-group [nzSuffix]="suffixIconSearch" class="search-input-group">
+        <input type="text" nz-input [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="جستجو (شماره فاکتور، نام مشتری، شناسه)..." />
+      </nz-input-group>
+      <ng-template #suffixIconSearch>
+        <i nz-icon nzType="search" class="search-icon"></i>
+      </ng-template>
+
+      <button nz-button nzType="default" class="filter-toggle-btn" (click)="showAdvancedFilters = !showAdvancedFilters" [class.active]="showAdvancedFilters">
+        <i nz-icon nzType="filter"></i> فیلترهای پیشرفته
+      </button>
+    </div>
+
+    @if (showAdvancedFilters) {
+      <div class="advanced-filters-panel">
+        <div class="filters-grid">
+          <div class="filter-item">
+            <label>وضعیت</label>
+            <nz-select [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()" nzPlaceHolder="همه" nzAllowClear>
+              <nz-option nzValue="all" nzLabel="همه"></nz-option>
+              <nz-option nzValue="InQueue" nzLabel="در صف"></nz-option>
+              <nz-option nzValue="Success" nzLabel="موفق"></nz-option>
+              <nz-option nzValue="Error" nzLabel="خطا"></nz-option>
+            </nz-select>
+          </div>
+          </div>
+      </div>
+    }
+  </div>
+
+  @if (setOfCheckedId.size > 0) {
+    <div class="bulk-actions-bar">
+      <div class="selection-info">
+        <span class="count-badge">{{ setOfCheckedId.size }}</span>
+        <span>فاکتور انتخاب شده</span>
+      </div>
+      <div class="actions">
+        <button nz-button nzType="primary" (click)="bulkSend()">
+          <i nz-icon nzType="cloud-upload"></i> ارسال گروهی
+        </button>
+        <button nz-button nzDanger nzType="default" (click)="bulkDelete()">
+          <i nz-icon nzType="delete"></i> حذف گروهی
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="invoices-table">
+    <div class="pagination-top">
+    <nz-pagination
+    [nzPageIndex]="pageIndex"
+    [nzPageSize]="pageSize"
+    [nzTotal]="totalItems"
+    [nzPageSizeOptions]="pageSizeOptions"
+    nzShowSizeChanger
+    nzShowQuickJumper
+    (nzPageIndexChange)="onPageIndexChange($event)"
+    (nzPageSizeChange)="onPageSizeChange($event)">
+     </nz-pagination>
+    </div>
+    <nz-table #basicTable [nzData]="filteredInvoices" [nzLoading]="isLoading" [nzPageSize]="pageSize" [nzPageIndex]="pageIndex" nzShowSizeChanger>
+      <thead>
+        <tr>
+          <th nzWidth="40px" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
+
+          <th nzWidth="60px">ردیف</th>
+          <th nzWidth="110px">تاریخ ایجاد</th>
+          <th nzWidth="110px">تاریخ صدور</th>
+          <th nzWidth="90px">موضوع</th>
+          <th nzWidth="150px">الگو / شماره</th>
+          <th>خریدار</th>
+          <th nzWidth="140px">مبلغ کل</th>
+          <th nzWidth="130px">وضعیت</th>
+          <th nzWidth="180px">عملیات</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of basicTable.data; track item.id; let i = $index) {
+          <tr>
+            <td [nzChecked]="setOfCheckedId.has(item.id)" (nzCheckedChange)="onItemChecked(item.id, $event)"></td>
+
+            <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+
+            <td class="text-muted text-sm">{{ formatDate(item.indatim) }}</td>
+
+            <td class="font-bold">{{ formatDate(item['createdAt']) }}</td>
+
+            <td>
+              @let sub = getSubjectInfo(item.ins);
+              <nz-tag [nzColor]="sub.color">{{ sub.text }}</nz-tag>
+            </td>
+
+            <td>
+              <div class="flex flex-col gap-1">
+                <span class="text-xs font-semibold">{{ getPatternLabel(item.pattern) }}</span>
+                <div class="invoice-badge-mini" (click)="copyInvoiceNumber(item.inno)">
+                  <span>{{ item.inno }}</span>
+                  <i nz-icon nzType="copy"></i>
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <div class="customer-cell">
+                <strong>{{ item.customerEconomicCode || '---' }}</strong>
+                @if(item.taxId) { <span class="sub-text">{{ item.taxId }}</span> }
+              </div>
+            </td>
+
+            <td>
+              <strong class="amount-cell">{{ formatAmount(item.totalAmount) }}</strong>
+            </td>
+
+            <td>
+              @let st = getStatusInfo(item.status);
+              <nz-tag [nzColor]="st.color">
+                <i nz-icon [nzType]="st.icon"></i> {{ st.text }}
+              </nz-tag>
+            </td>
+
+            <td>
+              <div class="action-buttons">
+                <button class="action-btn view-btn" [routerLink]="['/invoices', item.id]" nz-tooltip nzTooltipTitle="مشاهده">
+                  <i nz-icon nzType="eye"></i>
+                </button>
+
+                @if (item.status === 'InQueue' || item.status === 'Error') {
+                  <button class="action-btn send-btn" (click)="sendToTax(item)" nz-tooltip nzTooltipTitle="ارسال">
+                    <i nz-icon nzType="cloud-upload"></i>
+                  </button>
+                }
+
+                <button class="action-btn sync-btn" (click)="inquireStatus(item)" nz-tooltip nzTooltipTitle="استعلام">
+                  <i nz-icon nzType="sync" [class.spin]="item.status === 'Pending'"></i>
+                </button>
+
+                @if (item.status === 'InQueue') {
+                  <button class="action-btn edit-btn" [routerLink]="['/invoices', item.id, 'edit']" nz-tooltip nzTooltipTitle="ویرایش">
+                    <i nz-icon nzType="edit"></i>
+                  </button>
+                  <button class="action-btn delete-btn" (click)="deleteInvoice(item)" nz-tooltip nzTooltipTitle="حذف">
+                    <i nz-icon nzType="delete"></i>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+</div>
+<nz-modal
+  [(nzVisible)]="isExportModalVisible"
+  nzTitle="دریافت خروجی اکسل"
+  (nzOnCancel)="handleExportCancel()"
+  (nzOnOk)="handleExportSubmit()"
+  [nzOkLoading]="isExporting"
+  nzOkText="دانلود فایل"
+  nzCancelText="انصراف">
+  <ng-container *nzModalContent>
+    <div style="padding: 10px;">
+      <p>لطفاً بازه زمانی گزارش را انتخاب کنید:</p>
+      <nz-range-picker [(ngModel)]="exportDateRange" style="width: 100%;"></nz-range-picker>
+      <p style="margin-top: 15px; font-size: 12px; color: #666;">
+        <i nz-icon nzType="info-circle" style="color: #10b981;"></i>
+        مناسب برای دریافت گزارش‌های حجیم (تا ۳۰۰۰ رکورد)
+      </p>
+    </div>
+  </ng-container>
+</nz-modal>

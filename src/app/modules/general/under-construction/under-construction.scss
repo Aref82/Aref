@@ -1,0 +1,40 @@
+.construction-container {
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  .content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px dashed #cbd5e1;
+
+    .icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #1e293b;
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+
+    p {
+      color: #64748b;
+      margin-bottom: 32px;
+      font-size: 16px;
+    }
+
+    button {
+      height: 45px;
+      padding: 0 30px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+  }
+}
